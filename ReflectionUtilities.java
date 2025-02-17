@@ -106,6 +106,36 @@ public class ReflectionUtilities {
 	 */
 	public static Object callMethod (Object target, String name, Object[] args)
 	{
+		//get all methods of target
+		Method []methods = target.getClass().getMethods();
+
+		for(int i = 0; i < methods.length; i ++){
+			// parameters for each method
+			Class<?>[] parameters = methods[i].getParameterTypes();
+			//compare method names and paramters to args given
+			if(name.equals(methods[i].getName()) && typesMatch(parameters, args)){
+				try {
+					// check for void method
+					if(methods[i].getReturnType() == void.class){
+						return null;
+					}
+					//otherwise invoke methon on target obj w/ given args
+					return methods[i].invoke(target, args);
+
+				} catch (IllegalAccessException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InvocationTargetException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+		}
+
 		return null;
 	}
 	
