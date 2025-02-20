@@ -64,8 +64,19 @@ public class Interpreter {
 	 * If there aren't quotation marks, then it is an integer literal.  Use Integer.parseInt
 	 * to turn the String into an int.
 	 */
+
 	public Object convertNameToInstance(String name){
-		return null;
+		if(mySymbolTable.containsKey(name)) {
+			return mySymbolTable.get(name);
+		}
+		if(name.startsWith("\"") && name.endsWith("\"")) {
+			return name.substring(1, name.length()-1);
+		}
+		try {
+			return Integer.parseInt(name);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 	
 	
@@ -74,7 +85,11 @@ public class Interpreter {
 	 * Simply call the other helper method of the same name on each item in the array.
 	 */
 	public Object[] convertNameToInstance(String[] names){
-		return null;
+		Object[] objects = new Object[names.length];
+		for (int i = 0; i < names.length; i++) {
+			objects[i] = convertNameToInstance(names[i]);
+		}
+		return objects;
 	}
 	
 	
@@ -83,8 +98,14 @@ public class Interpreter {
 	 * Don't forget to add the new object to the symbol table.
 	 * The String that is returned should be a basic message telling what happened.
 	 */
-	public String makeObject(ParseResults parse){		
-		return "oops.";
+	public String makeObject(ParseResults parse){
+		Object[] args = convertNameToInstance(parse.arguments);
+		Object newObj = ReflectionUtilities.createInstance(parse.className, args);
+		if (newObj == null) {
+			return "Error: Could not create instance of " + parse.className;
+		}	
+		mySymbolTable.put(parse.objectName, newObj);
+		return "ok. I have a new "	+ parse.className + " called " + parse.objectName;
 	}
 	
 	/*
@@ -99,7 +120,18 @@ public class Interpreter {
 	 * and replacing it with something else.
 	 */
 	public String callMethod(ParseResults parse){
-		return "oops.";
+		Object target = mySymbolTable.get(parse.objectName);
+		if(target == null) {
+			return "Error: Object " + parse.objectName + " not found.";
+		}
+		Object[] args = convertNameToInstance(parse.arguments);
+		Object result = ReflectionUtilities.callMethod(target, parse.methodName, args);
+		if (parse.answerName.isEmpty()) {
+			return "I have preformed the operation. My answer is: " + result;
+		}
+		mySymbolTable.put(parse.answerName, result);
+		return "I made a new object. The result was " + result;
+
 	}
 
 }
