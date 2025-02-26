@@ -35,13 +35,11 @@ public class ReflectionUtilities {
 	public static boolean typesMatch (Class<?>[] formals, Object[] actuals) {
 		if (formals.length == actuals.length){
 			for(int i =0; i < actuals.length; i++){
-				//check for int type 
 				if(formals[i] == int.class){
 					if(!typesMatchInts(formals[i], actuals[i])){
 						return false;
 					}
 				}
-				//object type
 				else{
 					if(!formals[i].isInstance(actuals[i])){
 					return false;  //obj. not instance of class
@@ -69,13 +67,11 @@ public class ReflectionUtilities {
 		try {
 			
 			Class<?> class1 = Class.forName(name);  // CLass<?> represents any type of class
-
 			Constructor<?>[]constructors = class1.getDeclaredConstructors(); // returns array of constructor objects
 
 			//get construcotr parameters
 			for(int i = 0; i < constructors.length; i ++){
 				Class<?> [] parameters = constructors[i].getParameterTypes();
-			
 			// check if constructor parameters = actual paramters
 				if(typesMatch(parameters, args)){
 					// ininitalize instance of class
