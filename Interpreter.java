@@ -64,8 +64,19 @@ public class Interpreter {
 	 * If there aren't quotation marks, then it is an integer literal.  Use Integer.parseInt
 	 * to turn the String into an int.
 	 */
+
 	public Object convertNameToInstance(String name){
-		return null;
+		if(mySymbolTable.containsKey(name)) {
+			return mySymbolTable.get(name);
+		}
+		if(name.startsWith("\"") && name.endsWith("\"")) {
+			return name.substring(1, name.length()-1);
+		}
+		try {
+			return Integer.parseInt(name);
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 	
 	
@@ -87,17 +98,9 @@ public class Interpreter {
 	 * Don't forget to add the new object to the symbol table.
 	 * The String that is returned should be a basic message telling what happened.
 	 */
-		
-		public String makeObject(ParseResults parse){
-			Object[] args = convertNameToInstance(parse.arguments);
-			Object newObj = ReflectionUtilities.createInstance(parse.className, args);
-			if (newObj == null) {
-				return "Error: Could not create instance of " + parse.className;
-			}	
-			mySymbolTable.put(parse.objectName, newObj);
-			return "ok. I have a new "	+ parse.className + " called " + parse.objectName;
-		}
-	
+	public String makeObject(ParseResults parse){		
+		return "oops.";
+	}
 	
 	/*
 	 * TODO: callMethod
